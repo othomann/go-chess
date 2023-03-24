@@ -30,6 +30,9 @@ var (
 		"8/8/8/8/4k3/8/3KP3/8 c - - 0 1",
 		"8/8/5k2/8/5K2/8/4P3P/8 w - - 0 1",
 		"r4rk1/1b2bppp/ppq1p3/2pp3n/5P2/1P1BP3/PBPPQ1PP/R4RK1 w e4 - 0 1",
+		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPP/RNBQKBNR w KQkq - 0 1 4",
+		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPP/RNBQKBNR/8 w KQkq - 0 1",
+		"rnbqkbnr/ppppAppp/8/8/8/8/PPPPPPP/RNBQKBNR w KQkq - 0 1",
 	}
 )
 
@@ -37,7 +40,7 @@ func TestValidFENs(t *testing.T) {
 	for _, f := range validFENs {
 		state, err := decodeFEN(f)
 		if err != nil {
-			t.Fatal("recieved unexpected error", err)
+			t.Fatal("received unexpected error", err)
 		}
 		if f != state.String() {
 			t.Fatalf("fen expected board string %s but got %s", f, state.String())

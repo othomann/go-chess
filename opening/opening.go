@@ -4,7 +4,7 @@ package opening
 import (
 	"bytes"
 
-	"github.com/notnil/chess"
+	"github.com/othomann/go-chess"
 )
 
 // A Opening represents a specific sequence of moves from the staring position.
@@ -33,7 +33,10 @@ func (o *Opening) PGN() string {
 // Game returns the opening as a game.
 func (o *Opening) Game() *chess.Game {
 	if o.game == nil {
-		pgn, _ := chess.PGN(bytes.NewBufferString(o.pgn))
+		pgn, _ := chess.PGN(&chess.Input{
+			Reader:   bytes.NewBufferString(o.pgn),
+			Notation: chess.UseNotation(chess.UCINotation{}),
+		})
 		o.game = chess.NewGame(pgn)
 	}
 	return o.game

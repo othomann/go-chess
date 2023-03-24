@@ -39,7 +39,7 @@ func NewBoard(m map[Square]Piece) *Board {
 				bm[sq] = true
 			}
 		}
-		bb := newBitboard(bm)
+		bb, _ := newBitboard(bm)
 		b.setBBForPiece(p1, bb)
 	}
 	b.calcConvienceBBs(nil)
@@ -314,7 +314,7 @@ func (b *Board) isOccupied(sq Square) bool {
 	return !b.emptySqs.Occupied(sq)
 }
 
-func (b *Board) hasSufficientMaterial() bool {
+func (b *Board) HasSufficientMaterial() bool {
 	// queen, rook, or pawn exist
 	if (b.bbWhiteQueen | b.bbWhiteRook | b.bbWhitePawn |
 		b.bbBlackQueen | b.bbBlackRook | b.bbBlackPawn) > 0 {
@@ -322,7 +322,7 @@ func (b *Board) hasSufficientMaterial() bool {
 	}
 	// if king is missing then it is a test
 	if b.bbWhiteKing == 0 || b.bbBlackKing == 0 {
-		return true
+		return false
 	}
 	count := map[PieceType]int{}
 	pieceMap := b.SquareMap()
@@ -418,7 +418,5 @@ func (b *Board) setBBForPiece(p Piece, bb bitboard) {
 		b.bbBlackKnight = bb
 	case BlackPawn:
 		b.bbBlackPawn = bb
-	default:
-		panic("invalid piece")
 	}
 }

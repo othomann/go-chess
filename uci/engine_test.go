@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/notnil/chess"
-	"github.com/notnil/chess/uci"
+	"github.com/othomann/go-chess"
+	"github.com/othomann/go-chess/uci"
 )
 
 var StockfishPath string
@@ -22,16 +22,16 @@ func init() {
 	StockfishPath = filepath.Join(dir, "..", "stockfish")
 }
 
-func Example() {
+func TestExample(t *testing.T) {
 	// set up engine to use stockfish exe
 	eng, err := uci.New(StockfishPath)
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 	defer eng.Close()
 	// initialize uci with new game
 	if err := eng.Run(uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame); err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 	// have stockfish play speed chess against itself (10 msec per move)
 	game := chess.NewGame()
@@ -39,11 +39,11 @@ func Example() {
 		cmdPos := uci.CmdPosition{Position: game.Position()}
 		cmdGo := uci.CmdGo{MoveTime: time.Second / 100}
 		if err := eng.Run(cmdPos, cmdGo); err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 		move := eng.SearchResults().BestMove
 		if err := game.Move(move); err != nil {
-			panic(err)
+			t.Fatal(err)
 		}
 	}
 	fmt.Println(game.String())
@@ -65,7 +65,11 @@ func TestEngine(t *testing.T) {
 		t.Fatal("expected a different move")
 	}
 	pos := &chess.Position{}
-	pos.UnmarshalText([]byte("r4r2/1b2bppk/ppq1p3/2pp3n/5P2/1P2P3/PBPPQ1PP/R4RK1 w - - 0 2"))
+	expected := "r4r2/1b2bppk/ppq1p3/2pp3n/5P2/1P2P3/PBPPQ1PP/R4RK1 w - - 0 2"
+	err = pos.UnmarshalText([]byte(expected))
+	if err != nil {
+		t.Fatal(err)
+	}
 	setPos.Position = pos
 	if err := eng.Run(uci.CmdUCINewGame, setPos, setGo); err != nil {
 		t.Fatal(err)

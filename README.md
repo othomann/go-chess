@@ -1,6 +1,6 @@
 # chess
-[![Build and Test](https://github.com/notnil/chess/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/notnil/chess/actions/workflows/build-and-test.yaml)
-[![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/notnil/chess)
+[![Build and Test](https://github.com/othomann/go-chess/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/othomann/go-chess/actions/workflows/build-and-test.yaml)
+[![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://godoc.org/github.com/othomann/go-chess)
 [![Coverage Status](https://coveralls.io/repos/notnil/chess/badge.svg?branch=master&service=github)](https://coveralls.io/github/notnil/chess?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/notnil/chess)](https://goreportcard.com/report/notnil/chess)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/notnil/chess/master/LICENSE)
@@ -26,7 +26,7 @@
 **chess** can be installed using "go get".
 
 ```bash
-go get -u github.com/notnil/chess
+go get -u github.com/othomann/go-chess
 ``` 
 
 ## Usage
@@ -40,7 +40,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/notnil/chess"
+	"github.com/othomann/go-chess"
 )
 
 func main() {
@@ -84,8 +84,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/notnil/chess"
-	"github.com/notnil/chess/uci"
+	"github.com/othomann/go-chess"
+	"github.com/othomann/go-chess/uci"
 )
 
 func main() {
@@ -457,7 +457,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/notnil/chess"
+	"github.com/othomann/go-chess"
 )
 
 func main() {
@@ -508,4 +508,21 @@ BenchmarkInvalidStalemateStatus-4         500000              2290 ns/op
 BenchmarkPositionHash-4                  1000000              1864 ns/op
 BenchmarkValidMoves-4                     100000             13445 ns/op
 BenchmarkPGN-4                               300           5549192 ns/op
+```
+
+### Testing
+
+#### Running tests
+
+This can be tested using:
+```
+go test ./...
+```
+
+#### With code coverage
+
+This can be tested using:
+```
+go test -coverprofile cover.out ./... 
+go tool cover -html=cover.out
 ```

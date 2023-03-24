@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/notnil/chess"
-	"github.com/notnil/chess/image"
+	"github.com/othomann/go-chess"
+	"github.com/othomann/go-chess/image"
 )
 
 const expectedMD5 = "08aaa6fcfde3bb900fc54bdfef3d5c81"
@@ -39,7 +39,11 @@ func TestSVG(t *testing.T) {
 
 	// create actual svg file for visualization
 	f, err := os.Create("example.svg")
-	defer f.Close()
+	defer func(t *testing.T) {
+		if err := f.Close(); err != nil {
+			t.Error(err)
+		}
+	}(t)
 	if err != nil {
 		t.Error(err)
 	}
@@ -71,7 +75,11 @@ func TestSVGFromBlack(t *testing.T) {
 
 	// create actual svg file for visualization
 	f, err := os.Create("black_example.svg")
-	defer f.Close()
+	defer func(t *testing.T) {
+		if err := f.Close(); err != nil {
+			t.Error(err)
+		}
+	}(t)
 	if err != nil {
 		t.Error(err)
 	}

@@ -16,8 +16,8 @@ package main
 import (
     "fmt"
 
-    "github.com/notnil/chess"
-    "github.com/notnil/chess/opening"
+    "github.com/othomann/go-chess"
+    "github.com/othomann/go-chess/opening"
 )
 
 func main(){

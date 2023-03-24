@@ -44,7 +44,7 @@ func (s *Scanner) Scan() bool {
 	var sb strings.Builder
 	state := notInPGN
 	setGame := func() bool {
-		game, err := decodePGN(sb.String())
+		game, err := decodePGN(nil, sb.String())
 		if err != nil {
 			s.err = err
 			return false
@@ -123,7 +123,7 @@ func GamesFromPGN(r io.Reader) ([]*Game, error) {
 			current += line
 		}
 		if count == 2 || eof {
-			game, err := decodePGN(current)
+			game, err := decodePGN(nil, current)
 			if err != nil {
 				return nil, err
 			}
@@ -136,22 +136,13 @@ func GamesFromPGN(r io.Reader) ([]*Game, error) {
 	return games, nil
 }
 
-type multiDecoder []Decoder
-
-func (a multiDecoder) Decode(pos *Position, s string) (*Move, error) {
-	for _, d := range a {
-		m, err := d.Decode(pos, s)
-		if err == nil {
-			return m, nil
-		}
-	}
-	return nil, fmt.Errorf(`chess: failed to decode notation text "%s" for position %s`, s, pos)
-}
-
-func decodePGN(pgn string) (*Game, error) {
+func decodePGN(f func(*Game), pgn string) (*Game, error) {
 	tagPairs := getTagPairs(pgn)
 	moveComments, outcome := moveListWithComments(pgn)
 	gameFuncs := []func(*Game){}
+	if f != nil {
+		gameFuncs = append(gameFuncs, f)
+	}
 	for _, tp := range tagPairs {
 		if strings.ToLower(tp.Key) == "fen" {
 			fenFunc, err := FEN(tp.Value)
@@ -165,8 +156,8 @@ func decodePGN(pgn string) (*Game, error) {
 	gameFuncs = append(gameFuncs, TagPairs(tagPairs))
 	g := NewGame(gameFuncs...)
 	g.ignoreAutomaticDraws = true
-	decoder := multiDecoder([]Decoder{AlgebraicNotation{}, LongAlgebraicNotation{}, UCINotation{}})
-	for _, move := range moveComments {
+	decoder := g.Notation()
+	for index, move := range moveComments {
 		m, err := decoder.Decode(g.Position(), move.MoveStr)
 		if err != nil {
 			return nil, fmt.Errorf("chess: pgn decode error %s on move %d", err.Error(), g.Position().moveCount)
@@ -174,7 +165,7 @@ func decodePGN(pgn string) (*Game, error) {
 		if err := g.Move(m); err != nil {
 			return nil, fmt.Errorf("chess: pgn invalid move error %s on move %d", err.Error(), g.Position().moveCount)
 		}
-		g.comments = append(g.comments, move.Comments)
+		g.comments[index] = move.Comments
 	}
 	g.outcome = outcome
 	return g, nil

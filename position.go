@@ -2,6 +2,7 @@ package chess
 
 import (
 	"bytes"
+	// #nosec
 	"crypto/md5"
 	"encoding/binary"
 	"errors"
@@ -151,6 +152,7 @@ func (pos *Position) String() string {
 // Hash returns a unique hash of the position
 func (pos *Position) Hash() [16]byte {
 	b, _ := pos.MarshalBinary()
+	// #nosec
 	return md5.Sum(b)
 }
 

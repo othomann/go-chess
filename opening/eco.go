@@ -5,10 +5,9 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
 	"strings"
 
-	"github.com/notnil/chess"
+	"github.com/othomann/go-chess"
 )
 
 // BookECO represents the Encyclopedia of Chess Openings https://en.wikipedia.org/wiki/Encyclopaedia_of_Chess_Openings
@@ -20,10 +19,10 @@ type BookECO struct {
 
 // NewBookECO returns a new BookECO.  This operation has to parse 2k rows of CSV data and insert it into a graph
 // so it can take some time.
-func NewBookECO() *BookECO {
+func NewBookECO() (*BookECO, error) {
 	startingPosition := &chess.Position{}
 	if err := startingPosition.UnmarshalText([]byte("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")); err != nil {
-		panic(err)
+		return nil, err
 	}
 	b := &BookECO{
 		root: &node{
@@ -37,16 +36,19 @@ func NewBookECO() *BookECO {
 	r.Comma = '\t'
 	records, err := r.ReadAll()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	for i, row := range records {
 		if i == 0 {
 			continue
 		}
 		o := &Opening{code: row[0], title: row[1], pgn: row[3]}
-		b.insert(o)
+		err = b.insert(o)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return b
+	return b, nil
 }
 
 // Find implements the Book interface
@@ -89,7 +91,7 @@ func (b *BookECO) insert(o *Opening) error {
 		pos := posList[len(posList)-1]
 		m, err := chess.UCINotation{}.Decode(pos, s)
 		if err != nil {
-			panic(err)
+			return err
 		}
 		moves = append(moves, m)
 		posList = append(posList, pos.Update(m))
@@ -134,7 +136,7 @@ type node struct {
 	label    string
 }
 
-func (b *BookECO) draw(w io.Writer) error {
+func (b *BookECO) Draw(w io.Writer) error {
 	s := "digraph g {\n"
 	for _, n := range b.nodeList(b.root) {
 		title := ""
@@ -176,7 +178,6 @@ func (b *BookECO) nodeList(root *node) []*node {
 
 var (
 	labelCount = 0
-	alphabet   = "abcdefghijklmnopqrstuvwxyz"
 )
 
 func label() string {

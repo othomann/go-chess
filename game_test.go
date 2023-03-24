@@ -159,6 +159,14 @@ func TestInvalidFiftyMoveRule(t *testing.T) {
 	}
 }
 
+func TestDrawMethod(t *testing.T) {
+	fen, _ := FEN("2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K b - b3 99 60")
+	g := NewGame(fen)
+	if err := g.Draw(Resignation); err == nil {
+		t.Fatal("should require fifty moves")
+	}
+}
+
 func TestSeventyFiveMoveRule(t *testing.T) {
 	fen, _ := FEN("2r3k1/1q1nbppp/r3p3/3pP3/pPpP4/P1Q2N2/2RN1PPP/2R4K b - b3 149 80")
 	g := NewGame(fen)
@@ -184,9 +192,32 @@ func TestInsufficientMaterial(t *testing.T) {
 			t.Fatal(err)
 		}
 		g := NewGame(fen)
+		if g.Method().String() != "InsufficientMaterial" {
+			t.Fatalf("Method InsufficientMaterial String() failed; expected %s, not got %s", "InsufficientMaterial", g.Method().String())
+		}
+		if g.Outcome().String() != "1/2-1/2" {
+			t.Fatalf("Outcome Draw String() failed; expected %s, not got %s", "1/2-1/2", g.Outcome().String())
+		}
 		if g.Outcome() != Draw || g.Method() != InsufficientMaterial {
 			log.Println(g.Position().Board().Draw())
 			t.Fatalf("%s should automatically draw by insufficient material", f)
+		}
+	}
+}
+
+func TestInsufficientMaterial2(t *testing.T) {
+	fens := []string{
+		"8/8/8/8/8/3K4/8/8 w - - 1 1",
+		"8/2k5/8/8/8/8/8/8 w - - 1 1",
+	}
+	for _, f := range fens {
+		fen, err := FEN(f)
+		if err != nil {
+			t.Fatal(err)
+		}
+		g := NewGame(fen)
+		if g.Method().String() != "InsufficientMaterial" {
+			t.Fatalf("Method InsufficientMaterial String() failed; expected %s, not got %s", "InsufficientMaterial", g.Method().String())
 		}
 	}
 }
@@ -217,7 +248,7 @@ func TestSerializationCycle(t *testing.T) {
 	g := NewGame()
 	g.MoveStr("e4")
 	g.MoveStr("e5")
-	pgn, err := PGN(strings.NewReader(g.String()))
+	pgn, err := PGN(NewInput(strings.NewReader(g.String())))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -236,13 +267,20 @@ func TestInitialNumOfValidMoves(t *testing.T) {
 
 func TestTagPairs(t *testing.T) {
 	g := NewGame()
-	g.AddTagPair("Draw Offer", "White")
+	override := g.AddTagPair("Draw Offer", "White")
+	if override {
+		t.Fatalf("TagPair was overriden")
+	}
 	tagPair := g.GetTagPair("Draw Offer")
 	if tagPair == nil {
 		t.Fatalf("expected %s but got %s", "White", "nil")
 	}
 	if tagPair.Value != "White" {
 		t.Fatalf("expected %s but got %s", "White", tagPair.Value)
+	}
+	override = g.AddTagPair("Draw Offer", "Black")
+	if !override {
+		t.Fatalf("TagPair was not overriden")
 	}
 	g.RemoveTagPair("Draw Offer")
 	tagPair = g.GetTagPair("Draw Offer")
@@ -268,7 +306,7 @@ func TestPositionHash(t *testing.T) {
 func TestMoveHistory(t *testing.T) {
 	lens := []int{89, 89, 5, 26}
 	for i, test := range validPGNs[0:4] {
-		pgn, err := PGN(strings.NewReader(test.PGN))
+		pgn, err := PGN(NewInput(strings.NewReader(test.PGN)))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -277,6 +315,80 @@ func TestMoveHistory(t *testing.T) {
 		if lens[i] != l {
 			t.Fatalf("expected history length to be %d but got %d", lens[i], l)
 		}
+	}
+}
+
+func TestMoveHistory2(t *testing.T) {
+	game := NewGame()
+	game.MoveStr("e4")
+	game.MoveStr("e5")
+	game.Resign(Black)
+	history := game.MoveHistory()
+	if len(history) != 2 {
+		t.Fatal("Didn't retrieve full history")
+	}
+	output := game.Position().Board().Draw()
+	if output == "" {
+		t.Fatalf("Wrong board output; expected %s, but got %s", "", output)
+	}
+	fen := game.FEN()
+	expected := "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2"
+	if fen != expected {
+		t.Fatalf("Wrong fen output; expected %s, but got %s", expected, fen)
+	}
+}
+
+func TestMoveHistory3(t *testing.T) {
+	game := NewGame()
+	game.MoveStr("e4")
+	game.MoveStr("e5")
+	game.Resign(Black)
+	history := game.MoveHistory()
+	if len(history) != 2 {
+		t.Fatal("Didn't retrieve full history")
+	}
+	game.UndoMove()
+	history = game.MoveHistory()
+	if len(history) != 1 {
+		t.Fatal("Didn't undo move")
+	}
+	game.UndoMove()
+	history = game.MoveHistory()
+	if len(history) != 0 {
+		t.Fatal("Didn't undo move")
+	}
+	err := game.UndoMove()
+	if err == nil {
+		t.Fatal("error should be returned as there is no move to undo")
+	}
+}
+
+func TestMarshalling(t *testing.T) {
+	game := NewGame()
+	game.MoveStr("e4")
+	game.MoveStr("e5")
+	game.Resign(Black)
+	bytes, err := game.MarshalText()
+	if err != nil {
+		t.Fatalf("Marshalling failed with %s", err)
+	}
+	output := string(bytes)
+	expected := "\n1. e4 e5  1-0"
+	if output != expected {
+		t.Fatalf("Wrong marshalling; expected %s, but got %s", expected, output)
+	}
+	err = game.UnmarshalText(bytes)
+	if err != nil {
+		t.Fatalf("Marshalling failed with %s", err)
+	}
+}
+
+func TestMarshalling2(t *testing.T) {
+	game := NewGame()
+	bytes := []byte("1. e4 e3")
+	err := game.UnmarshalText(bytes)
+	if err == nil {
+		t.Fatalf("Missing error while marshalling")
 	}
 }
 

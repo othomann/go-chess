@@ -62,8 +62,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/notnil/chess"
-	"github.com/notnil/chess/image"
+	"github.com/othomann/go-chess"
+	"github.com/othomann/go-chess/image"
 )
 
 func main() {

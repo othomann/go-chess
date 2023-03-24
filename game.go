@@ -4,10 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 )
 
 // A Outcome is the result of a game.
+//
+
 type Outcome string
 
 const (
@@ -29,6 +30,7 @@ func (o Outcome) String() string {
 // A Method is the method that generated the outcome.
 type Method uint8
 
+//go:generate stringer -type=Method -linecomment
 const (
 	// NoMethod indicates that an outcome hasn't occurred or that the method can't be determined.
 	NoMethod Method = iota
@@ -76,17 +78,30 @@ type Game struct {
 	ignoreAutomaticDraws bool
 }
 
+type Input struct {
+	Reader   io.Reader
+	Notation func(*Game)
+}
+
+func NewInput(r io.Reader) *Input {
+	input := &Input{
+		Reader:   r,
+		Notation: UseNotation(AlgebraicNotation{}),
+	}
+	return input
+}
+
 // PGN takes a reader and returns a function that updates
 // the game to reflect the PGN data.  The PGN can use any
 // move notation supported by this package.  The returned
 // function is designed to be used in the NewGame constructor.
 // An error is returned if there is a problem parsing the PGN data.
-func PGN(r io.Reader) (func(*Game), error) {
-	b, err := ioutil.ReadAll(r)
+func PGN(input *Input) (func(*Game), error) {
+	b, err := io.ReadAll(input.Reader)
 	if err != nil {
 		return nil, err
 	}
-	game, err := decodePGN(string(b))
+	game, err := decodePGN(input.Notation, string(b))
 	if err != nil {
 		return nil, err
 	}
@@ -133,6 +148,12 @@ func UseNotation(n Notation) func(*Game) {
 	}
 }
 
+func (g *Game) GetNotation() func(*Game) {
+	return func(game *Game) {
+		game.notation = g.notation
+	}
+}
+
 // NewGame defaults to returning a game in the standard
 // opening position.  Options can be given to configure
 // the game's initial state.
@@ -163,9 +184,14 @@ func (g *Game) Move(m *Move) error {
 	}
 	g.moves = append(g.moves, valid)
 	g.pos = g.pos.Update(valid)
+	g.comments = append(g.comments, []string{})
 	g.positions = append(g.positions, g.pos)
 	g.updatePosition()
 	return nil
+}
+
+func (g *Game) Notation() Notation {
+	return g.notation
 }
 
 // MoveStr decodes the given string in game's notation
@@ -240,7 +266,7 @@ func (g *Game) MarshalText() (text []byte, err error) {
 // UnmarshalText implements the encoding.TextUnarshaler interface and
 // assumes the data is in the PGN format.
 func (g *Game) UnmarshalText(text []byte) error {
-	game, err := decodePGN(string(text))
+	game, err := decodePGN(nil, string(text))
 	if err != nil {
 		return err
 	}
@@ -367,6 +393,19 @@ func (g *Game) MoveHistory() []*MoveHistory {
 	return h
 }
 
+func (g *Game) UndoMove() error {
+	if len(g.moves) <= 0 {
+		return fmt.Errorf("game has no moves to undo")
+	}
+	length := len(g.moves)
+	g.moves = g.moves[:length-1]
+	g.positions = g.positions[:length]
+	g.pos = g.positions[len(g.positions)-1]
+	g.comments = g.comments[:length-1]
+	g.updatePosition()
+	return nil
+}
+
 func (g *Game) updatePosition() {
 	method := g.pos.Status()
 	if method == Stalemate {
@@ -396,7 +435,7 @@ func (g *Game) updatePosition() {
 	}
 
 	// insufficient material creates automatic draw
-	if !g.ignoreAutomaticDraws && !g.pos.board.hasSufficientMaterial() {
+	if !g.ignoreAutomaticDraws && !g.pos.board.HasSufficientMaterial() {
 		g.outcome = Draw
 		g.method = InsufficientMaterial
 	}
@@ -418,9 +457,10 @@ func (g *Game) Clone() *Game {
 		notation:  g.notation,
 		moves:     g.Moves(),
 		positions: g.Positions(),
-		pos:       g.pos,
-		outcome:   g.outcome,
-		method:    g.method,
+		//		comments:  g.Comments(),
+		pos:     g.pos,
+		outcome: g.outcome,
+		method:  g.method,
 	}
 }
 

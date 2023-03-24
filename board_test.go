@@ -8,11 +8,11 @@ func TestBoardTextSerialization(t *testing.T) {
 	fen := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 	b := &Board{}
 	if err := b.UnmarshalText([]byte(fen)); err != nil {
-		t.Fatal("recieved unexpected error", err)
+		t.Fatal("received unexpected error", err)
 	}
 	txt, err := b.MarshalText()
 	if err != nil {
-		t.Fatal("recieved unexpected error", err)
+		t.Fatal("received unexpected error", err)
 	}
 	if fen != string(txt) {
 		t.Fatalf("fen expected board string %s but got %s", fen, string(txt))

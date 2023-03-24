@@ -1,7 +1,7 @@
 package chess
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 	"testing"
@@ -10,52 +10,36 @@ import (
 type pgnTest struct {
 	PostPos *Position
 	PGN     string
+	Error   error
+}
+
+func MakePGNTest(pos string, arg string) pgnTest {
+	pgn, err := mustParsePGN()(arg)
+	return pgnTest{
+		PostPos: unsafeFEN(pos),
+		PGN:     pgn,
+		Error:   err,
+	}
 }
 
 var (
 	validPGNs = []pgnTest{
-		{
-			PostPos: unsafeFEN("4r3/6P1/2p2P1k/1p6/pP2p1R1/P1B5/2P2K2/3r4 b - - 0 45"),
-			PGN:     mustParsePGN("fixtures/pgns/0001.pgn"),
-		},
-		{
-			PostPos: unsafeFEN("4r3/6P1/2p2P1k/1p6/pP2p1R1/P1B5/2P2K2/3r4 b - - 0 45"),
-			PGN:     mustParsePGN("fixtures/pgns/0002.pgn"),
-		},
-		{
-			PostPos: unsafeFEN("2r2rk1/pp1bBpp1/2np4/2pp2p1/1bP5/1P4P1/P1QPPPBP/3R1RK1 b - - 0 3"),
-			PGN:     mustParsePGN("fixtures/pgns/0003.pgn"),
-		},
-		{
-			PostPos: unsafeFEN("r3kb1r/2qp1pp1/b1n1p2p/pp2P3/5n1B/1PPQ1N2/P1BN1PPP/R3K2R w KQkq - 1 14"),
-			PGN:     mustParsePGN("fixtures/pgns/0004.pgn"),
-		},
-		{
-			PostPos: unsafeFEN("rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3"),
-			PGN:     mustParsePGN("fixtures/pgns/0008.pgn"),
-		},
-		{
-			PostPos: unsafeFEN("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"),
-			PGN:     mustParsePGN("fixtures/pgns/0009.pgn"),
-		},
-		{
-			PostPos: unsafeFEN("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"),
-			PGN:     mustParsePGN("fixtures/pgns/0010.pgn"),
-		},
-		{
-			PostPos: unsafeFEN("8/8/6p1/4R3/6kQ/r2P1pP1/5P2/6K1 b - - 3 42"),
-			PGN:     mustParsePGN("fixtures/pgns/0011.pgn"),
-		},
-		{
-			PostPos: StartingPosition(),
-			PGN:     mustParsePGN("fixtures/pgns/0012.pgn"),
-		},
+		MakePGNTest("4r3/6P1/2p2P1k/1p6/pP2p1R1/P1B5/2P2K2/3r4 b - - 0 45", "fixtures/pgns/0001.pgn"),
+		MakePGNTest("4r3/6P1/2p2P1k/1p6/pP2p1R1/P1B5/2P2K2/3r4 b - - 0 45", "fixtures/pgns/0002.pgn"),
+		MakePGNTest("2r2rk1/pp1bBpp1/2np4/2pp2p1/1bP5/1P4P1/P1QPPPBP/3R1RK1 b - - 0 3", "fixtures/pgns/0003.pgn"),
+		MakePGNTest("r3kb1r/2qp1pp1/b1n1p2p/pp2P3/5n1B/1PPQ1N2/P1BN1PPP/R3K2R w KQkq - 1 14", "fixtures/pgns/0004.pgn"),
+		MakePGNTest("r3kb1r/2qp1pp1/b1n1p2p/pp2P3/5n1B/1PPQ1N2/P1BN1PPP/R3K2R w KQkq - 1 14", "fixtures/pgns/0004.pgn"),
+		MakePGNTest("rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3", "fixtures/pgns/0008.pgn"),
+		MakePGNTest("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", "fixtures/pgns/0009.pgn"),
+		MakePGNTest("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", "fixtures/pgns/0010.pgn"),
+		MakePGNTest("8/8/6p1/4R3/6kQ/r2P1pP1/5P2/6K1 b - - 3 42", "fixtures/pgns/0011.pgn"),
+		MakePGNTest("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "fixtures/pgns/0012.pgn"),
 	}
 )
 
 func TestValidPGNs(t *testing.T) {
 	for _, test := range validPGNs {
-		game, err := decodePGN(test.PGN)
+		game, err := decodePGN(nil, test.PGN)
 		if err != nil {
 			t.Fatalf("recieved unexpected pgn error %s", err.Error())
 		}
@@ -69,33 +53,31 @@ func TestValidPGNs(t *testing.T) {
 
 type commentTest struct {
 	PGN         string
+	Error       error
 	MoveNumber  int
 	CommentText string
 }
 
+func MakeCommentText(file string, moveNumber int, comment string) commentTest {
+	pgn, _ := mustParsePGN()(file)
+	return commentTest{
+		PGN:         pgn,
+		MoveNumber:  moveNumber,
+		CommentText: comment,
+	}
+}
+
 var (
 	commentTests = []commentTest{
-		{
-			PGN:         mustParsePGN("fixtures/pgns/0005.pgn"),
-			MoveNumber:  7,
-			CommentText: `(-0.25 → 0.39) Inaccuracy. cxd4 was best. [%eval 0.39] [%clk 0:05:05]`,
-		},
-		{
-			PGN:         mustParsePGN("fixtures/pgns/0009.pgn"),
-			MoveNumber:  5,
-			CommentText: `This opening is called the Ruy Lopez.`,
-		},
-		{
-			PGN:         mustParsePGN("fixtures/pgns/0010.pgn"),
-			MoveNumber:  5,
-			CommentText: `This opening is called the Ruy Lopez.`,
-		},
+		MakeCommentText("fixtures/pgns/0005.pgn", 7, `(-0.25 → 0.39) Inaccuracy. cxd4 was best. [%eval 0.39] [%clk 0:05:05]`),
+		MakeCommentText("fixtures/pgns/0009.pgn", 5, `This opening is called the Ruy Lopez.`),
+		MakeCommentText("fixtures/pgns/0010.pgn", 5, `This opening is called the Ruy Lopez.`),
 	}
 )
 
 func TestCommentsDetection(t *testing.T) {
 	for _, test := range commentTests {
-		game, err := decodePGN(test.PGN)
+		game, err := decodePGN(nil, test.PGN)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -108,7 +90,7 @@ func TestCommentsDetection(t *testing.T) {
 
 func TestNewGameComments(t *testing.T) {
 	for _, test := range commentTests {
-		pgn, err := PGN(strings.NewReader(test.PGN))
+		pgn, err := PGN(NewInput(strings.NewReader(test.PGN)))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -121,12 +103,15 @@ func TestNewGameComments(t *testing.T) {
 }
 
 func TestWriteComments(t *testing.T) {
-	pgn := mustParsePGN("fixtures/pgns/0005.pgn")
-	game, err := decodePGN(pgn)
+	pgn, err := mustParsePGN()("fixtures/pgns/0005.pgn")
 	if err != nil {
 		t.Fatal(err)
 	}
-	game, err = decodePGN(game.String())
+	game, err := decodePGN(nil, pgn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	game, err = decodePGN(nil, game.String())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -139,7 +124,7 @@ func TestScanner(t *testing.T) {
 	for _, fname := range []string{"fixtures/pgns/0006.pgn", "fixtures/pgns/0007.pgn"} {
 		f, err := os.Open(fname)
 		if err != nil {
-			panic(err)
+			t.Fatal("could not open file")
 		}
 		defer f.Close()
 		scanner := NewScanner(f)
@@ -155,25 +140,27 @@ func TestScanner(t *testing.T) {
 }
 
 func BenchmarkPGN(b *testing.B) {
-	pgn := mustParsePGN("fixtures/pgns/0001.pgn")
+	pgn, _ := mustParsePGN()("fixtures/pgns/0001.pgn")
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		opt, _ := PGN(strings.NewReader(pgn))
+		opt, _ := PGN(NewInput(strings.NewReader(pgn)))
 		NewGame(opt)
 	}
 }
 
-func mustParsePGN(fname string) string {
-	f, err := os.Open(fname)
-	if err != nil {
-		panic(err)
+func mustParsePGN() func(n string) (string, error) {
+	return func(n string) (string, error) {
+		f, err := os.Open(n)
+		if err != nil {
+			return "", err
+		}
+		defer f.Close()
+		b, err := io.ReadAll(f)
+		if err != nil {
+			return "", err
+		}
+		return string(b), nil
 	}
-	defer f.Close()
-	b, err := ioutil.ReadAll(f)
-	if err != nil {
-		panic(err)
-	}
-	return string(b)
 }
 func TestGamesFromPGN(t *testing.T) {
 	for _, test := range validPGNs {

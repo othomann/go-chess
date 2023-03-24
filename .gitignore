@@ -28,3 +28,6 @@ _testmain.go
 
 # Benchmarking
 cpu.out
+stockfish
+.DS_Store
+cover.out
