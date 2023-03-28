@@ -336,6 +336,10 @@ func TestMoveHistory2(t *testing.T) {
 	if fen != expected {
 		t.Fatalf("Wrong fen output; expected %s, but got %s", expected, fen)
 	}
+	err := game.Move(nil)
+	if err == nil {
+		t.Fatalf("Error should be reported")
+	}
 }
 
 func TestMoveHistory3(t *testing.T) {

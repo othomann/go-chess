@@ -1,72 +1,92 @@
 package algorithm
 
-import "github.com/othomann/go-chess"
+import (
+	"math"
+	"sort"
 
-const (
-	INF = 1000000
-	MAX = 1
-	MIN = 0
+	"github.com/othomann/go-chess"
 )
 
-func AlphaBeta(g *chess.Game, depth int, alpha int, beta int, maximizingPlayer bool) int {
+func AlphaBeta(game *chess.Game, depth, alpha, beta int, maximizingPlayer bool) int {
+	// check if we've reached the maximum depth or if the game is over
+	if game.Method() == chess.Checkmate {
+		return math.MaxInt32
+	}
 	if depth == 0 {
-		return g.Evaluate()
+		return game.Evaluate()
 	}
 
-	moves := g.ValidMoves()
-	if len(moves) == 0 {
-		switch g.Method() {
-		case chess.InCheck:
-			fallthrough
-		case chess.Checkmate:
-			return -INF
-		case chess.Stalemate:
-			fallthrough
-		case chess.DrawOffer:
-			fallthrough
-		case chess.FiftyMoveRule:
-			fallthrough
-		case chess.FivefoldRepetition:
-			fallthrough
-		case chess.SeventyFiveMoveRule:
-			fallthrough
-		case chess.InsufficientMaterial:
-			return 0
-		}
-	}
+	// generate all possible moves
+	moves := game.ValidMoves()
+	sort.Sort(chess.MoveSlice(moves))
 
+	// if the maximizing player is playing
 	if maximizingPlayer {
-		bestValue := -INF
+		bestScore := math.MinInt32
 		for _, move := range moves {
-			g.Move(move)
-			value := AlphaBeta(g, depth-1, alpha, beta, !maximizingPlayer)
-			g.UndoMove()
-			bestValue = max(bestValue, value)
-			alpha = max(alpha, bestValue)
+			// apply the move to the game state
+			game.Move(move)
+
+			// calculate the score of this move using alpha-beta pruning
+			score := AlphaBeta(game, depth-1, alpha, beta, false)
+
+			// update the best score and alpha value
+			bestScore = max(bestScore, score)
+			alpha = max(alpha, bestScore)
+
+			// undo the move
+			game.UndoMove()
+
+			// check if we can prune the remaining moves
 			if beta <= alpha {
 				break
 			}
 		}
-		return bestValue
-	} else {
-		bestValue := INF
+		return bestScore
+	} else { // if the minimizing player is playing
+		bestScore := math.MaxInt32
 		for _, move := range moves {
-			g.Move(move)
-			value := AlphaBeta(g, depth-1, alpha, beta, !maximizingPlayer)
-			g.UndoMove()
-			bestValue = min(bestValue, value)
-			beta = min(beta, bestValue)
+			// apply the move to the game state
+			game.Move(move)
+
+			// calculate the score of this move using alpha-beta pruning
+			score := AlphaBeta(game, depth-1, alpha, beta, true)
+
+			// update the best score and beta value
+			bestScore = min(bestScore, score)
+			beta = min(beta, bestScore)
+
+			// undo the move
+			game.UndoMove()
+
+			// check if we can prune the remaining moves
 			if beta <= alpha {
 				break
 			}
 		}
-		return bestValue
+		return bestScore
 	}
+}
+
+// helper function to get the maximum of two integers
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// helper function to get the minimum of two integers
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func Minimax(g *chess.Game, depth int, alpha int, beta int) (int, *chess.Move) {
 	if depth == 0 || g.Method() == chess.Checkmate {
-		return INF, &chess.Move{}
+		return math.MaxInt32, &chess.Move{}
 	}
 
 	bestScore := -99999
@@ -97,18 +117,4 @@ func Minimax(g *chess.Game, depth int, alpha int, beta int) (int, *chess.Move) {
 	}
 
 	return bestScore, bestMove
-}
-
-func max(a int, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func min(a int, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

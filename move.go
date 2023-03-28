@@ -19,6 +19,14 @@ const (
 	inCheck
 )
 
+const (
+	DEFAULT    = 1
+	CASTLE     = 10
+	CAPTURE    = 100
+	EN_PASSANT = 100
+	CHECK      = 1000
+)
+
 // A Move is the movement of a piece from one square to another.
 type Move struct {
 	s1    Square
@@ -57,9 +65,9 @@ func (m *Move) addTag(tag MoveTag) {
 	m.tags = m.tags | tag
 }
 
-type moveSlice []*Move
+type MoveSlice []*Move
 
-func (a moveSlice) find(m *Move) *Move {
+func (a MoveSlice) find(m *Move) *Move {
 	if m == nil {
 		return nil
 	}
@@ -69,4 +77,32 @@ func (a moveSlice) find(m *Move) *Move {
 		}
 	}
 	return nil
+}
+
+func (a MoveSlice) Len() int {
+	return len(a)
+}
+
+func (a MoveSlice) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a MoveSlice) Less(i, j int) bool {
+	return compare(a[i]) > compare(a[j])
+}
+
+func compare(move *Move) int {
+	if move.HasTag(Capture) {
+		return CAPTURE
+	}
+	if move.HasTag(Check) {
+		return CHECK
+	}
+	if move.HasTag(QueenSideCastle) || move.HasTag(KingSideCastle) {
+		return CASTLE
+	}
+	if move.HasTag(EnPassant) {
+		return EN_PASSANT
+	}
+	return DEFAULT
 }

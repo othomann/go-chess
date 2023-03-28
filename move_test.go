@@ -2,6 +2,7 @@ package chess
 
 import (
 	"log"
+	"sort"
 	"testing"
 )
 
@@ -330,7 +331,9 @@ func BenchmarkValidMoves(b *testing.B) {
 }
 
 func moveIsValid(pos *Position, m *Move, useTags bool) bool {
-	for _, move := range pos.ValidMoves() {
+	validMoves := pos.ValidMoves()
+	sort.Sort(MoveSlice(validMoves))
+	for _, move := range validMoves {
 		if move.s1 == m.s1 && move.s2 == m.s2 && move.promo == m.promo {
 			if useTags {
 				if m.tags != move.tags {

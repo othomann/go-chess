@@ -180,7 +180,7 @@ func NewGame(options ...func(*Game)) *Game {
 // Move updates the game with the given move.  An error is returned
 // if the move is invalid or the game has already been completed.
 func (g *Game) Move(m *Move) error {
-	valid := moveSlice(g.ValidMoves()).find(m)
+	valid := MoveSlice(g.ValidMoves()).find(m)
 	if valid == nil {
 		return fmt.Errorf("chess: invalid move %s", m)
 	}
