@@ -64,6 +64,41 @@ func AlphaBeta(g *chess.Game, depth int, alpha int, beta int, maximizingPlayer b
 	}
 }
 
+func Minimax(g *chess.Game, depth int, alpha int, beta int) (int, *chess.Move) {
+	if depth == 0 || g.Method() == chess.Checkmate {
+		return INF, &chess.Move{}
+	}
+
+	bestScore := -99999
+	var bestMove *chess.Move
+
+	for _, move := range g.ValidMoves() {
+		g.Move(move)
+		score, _ := Minimax(g, depth-1, alpha, beta)
+		g.UndoMove()
+
+		if g.Position().Turn() == chess.White && score > bestScore {
+			bestScore = score
+			bestMove = move
+			if score > alpha {
+				alpha = score
+			}
+		} else if g.Position().Turn() == chess.Black && score < bestScore {
+			bestScore = score
+			bestMove = move
+			if score < beta {
+				beta = score
+			}
+		}
+
+		if alpha >= beta {
+			break
+		}
+	}
+
+	return bestScore, bestMove
+}
+
 func max(a int, b int) int {
 	if a > b {
 		return a
