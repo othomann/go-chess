@@ -340,6 +340,13 @@ func TestMoveHistory2(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Error should be reported")
 	}
+	err = game.Move(&Move{
+		s1: A1,
+		s2: A2,
+	})
+	if err == nil {
+		t.Fatalf("Error should be reported")
+	}
 }
 
 func TestMoveHistory3(t *testing.T) {

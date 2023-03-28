@@ -85,14 +85,22 @@ func min(a, b int) int {
 }
 
 func Minimax(g *chess.Game, depth int, alpha int, beta int) (int, *chess.Move) {
-	if depth == 0 || g.Method() == chess.Checkmate {
+	if depth == 0 {
+		if g.Method() == chess.Checkmate {
+			return math.MaxInt32, &chess.Move{}
+		}
+		return g.Evaluate(), &chess.Move{}
+	} else if g.Method() == chess.Checkmate {
 		return math.MaxInt32, &chess.Move{}
+	} else if g.Method() == chess.Stalemate {
+		return 0, &chess.Move{}
 	}
-
 	bestScore := -99999
 	var bestMove *chess.Move
 
-	for _, move := range g.ValidMoves() {
+	validMoves := g.ValidMoves()
+	sort.Sort(chess.MoveSlice(validMoves))
+	for _, move := range validMoves {
 		g.Move(move)
 		score, _ := Minimax(g, depth-1, alpha, beta)
 		g.UndoMove()
