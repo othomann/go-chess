@@ -57,6 +57,8 @@ const (
 	// InsufficientMaterial indicates that the game was automatically drawn
 	// because there was insufficient material for checkmate.
 	InsufficientMaterial
+	// Check indicates that the current position in the game is in check.
+	InCheck
 )
 
 // TagPair represents metadata in a key value pairing used in the PGN format.
@@ -239,6 +241,10 @@ func (g *Game) Position() *Position {
 // Outcome returns the game outcome.
 func (g *Game) Outcome() Outcome {
 	return g.outcome
+}
+
+func (g *Game) Evaluate() int {
+	return g.pos.Evaluate()
 }
 
 // Method returns the method in which the outcome occurred.

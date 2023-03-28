@@ -515,14 +515,14 @@ BenchmarkPGN-4                               300           5549192 ns/op
 #### Running tests
 
 This can be tested using:
-```
+```bash
 go test ./...
 ```
 
 #### With code coverage
 
 This can be tested using:
-```
+```bash
 go test -coverprofile cover.out ./... 
 go tool cover -html=cover.out
 ```

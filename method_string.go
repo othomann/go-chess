@@ -18,11 +18,12 @@ func _() {
 	_ = x[FiftyMoveRule-7]
 	_ = x[SeventyFiveMoveRule-8]
 	_ = x[InsufficientMaterial-9]
+	_ = x[InCheck-10]
 }
 
-const _Method_name = "NoMethodCheckmateResignationDrawOfferStalemateThreefoldRepetitionFivefoldRepetitionFiftyMoveRuleSeventyFiveMoveRuleInsufficientMaterial"
+const _Method_name = "NoMethodCheckmateResignationDrawOfferStalemateThreefoldRepetitionFivefoldRepetitionFiftyMoveRuleSeventyFiveMoveRuleInsufficientMaterialInCheck"
 
-var _Method_index = [...]uint8{0, 8, 17, 28, 37, 46, 65, 83, 96, 115, 135}
+var _Method_index = [...]uint8{0, 8, 17, 28, 37, 46, 65, 83, 96, 115, 135, 142}
 
 func (i Method) String() string {
 	if i >= Method(len(_Method_index)-1) {

@@ -116,6 +116,14 @@ func (pos *Position) Board() *Board {
 	return pos.board
 }
 
+func (pos *Position) Evaluate() int {
+	result := pos.board.Evaluate()
+	if pos.Turn() == White {
+		return result
+	}
+	return -result
+}
+
 // Turn returns the color to move next.
 func (pos *Position) Turn() Color {
 	return pos.turn

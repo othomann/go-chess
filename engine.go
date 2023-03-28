@@ -23,6 +23,8 @@ func (engine) Status(pos *Position) Method {
 		return Stalemate
 	} else if pos.inCheck && !hasMove {
 		return Checkmate
+	} else if pos.inCheck {
+		return InCheck
 	}
 	return NoMethod
 }

@@ -125,6 +125,39 @@ func (b *Board) Draw() string {
 	return s
 }
 
+// Draw returns visual representation of the board useful for debugging.
+func (b *Board) Evaluate() int {
+	result := 0
+	for r := numOfSquaresInRow - 1; r >= 0; r-- {
+		for f := 0; f < numOfSquaresInRow; f++ {
+			p := b.Piece(NewSquare(File(f), Rank(r)))
+			switch p {
+			case WhiteBishop:
+				fallthrough
+			case WhiteKnight:
+				result += 3
+			case WhiteQueen:
+				result += 9
+			case WhiteRook:
+				result += 5
+			case WhitePawn:
+				result++
+			case BlackBishop:
+				fallthrough
+			case BlackKnight:
+				result -= 3
+			case BlackPawn:
+				result--
+			case BlackRook:
+				result -= 5
+			case BlackQueen:
+				result -= 9
+			}
+		}
+	}
+	return result
+}
+
 // String implements the fmt.Stringer interface and returns
 // a string in the FEN board format: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 func (b *Board) String() string {
