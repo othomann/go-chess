@@ -83,6 +83,7 @@ type Game struct {
 type Input struct {
 	Reader   io.Reader
 	Notation func(*Game)
+	FEN      func(*Game)
 }
 
 func NewInput(r io.Reader) *Input {
@@ -156,6 +157,10 @@ func (g *Game) GetNotation() func(*Game) {
 	}
 }
 
+func (g *Game) SetNotation(n Notation) {
+	g.notation = n
+}
+
 // NewGame defaults to returning a game in the standard
 // opening position.  Options can be given to configure
 // the game's initial state.
@@ -210,7 +215,8 @@ func (g *Game) MoveStr(s string) error {
 // ValidMoves returns a list of valid moves in the
 // current position.
 func (g *Game) ValidMoves() []*Move {
-	return g.pos.ValidMoves()
+	moves := g.pos.ValidMoves()
+	return moves
 }
 
 // Positions returns the position history of the game.

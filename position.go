@@ -2,6 +2,8 @@ package chess
 
 import (
 	"bytes"
+	"sort"
+
 	// #nosec
 	"crypto/md5"
 	"encoding/binary"
@@ -98,11 +100,15 @@ func (pos *Position) Update(m *Move) *Position {
 
 // ValidMoves returns a list of valid moves for the position.
 func (pos *Position) ValidMoves() []*Move {
+	var temp MoveSlice
 	if pos.validMoves != nil {
-		return append([]*Move(nil), pos.validMoves...)
+		temp = append([]*Move(nil), pos.validMoves...)
+	} else {
+		pos.validMoves = engine{}.CalcMoves(pos, false)
+		temp = append([]*Move(nil), pos.validMoves...)
 	}
-	pos.validMoves = engine{}.CalcMoves(pos, false)
-	return append([]*Move(nil), pos.validMoves...)
+	sort.Sort(MoveSlice(temp))
+	return temp
 }
 
 // Status returns the position's status as one of the outcome methods.

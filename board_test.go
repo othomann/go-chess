@@ -24,12 +24,12 @@ func TestBoardBinarySerialization(t *testing.T) {
 	board := g.Position().Board()
 	b, err := board.MarshalBinary()
 	if err != nil {
-		t.Fatal("recieved unexpected error", err)
+		t.Fatal("received unexpected error", err)
 	}
 	cpBoard := &Board{}
 	err = cpBoard.UnmarshalBinary(b)
 	if err != nil {
-		t.Fatal("recieved unexpected error", err)
+		t.Fatal("received unexpected error", err)
 	}
 	s := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 	if s != cpBoard.String() {

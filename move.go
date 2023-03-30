@@ -20,11 +20,12 @@ const (
 )
 
 const (
-	DEFAULT    = 1
-	CASTLE     = 10
-	CAPTURE    = 100
-	EN_PASSANT = 100
-	CHECK      = 1000
+	DEFAULT       = 1
+	CASTLE        = 10
+	CAPTURE       = 100
+	EN_PASSANT    = 100
+	CHECK         = 1000
+	CAPTURE_CHECK = 10000
 )
 
 // A Move is the movement of a piece from one square to another.
@@ -93,7 +94,11 @@ func (a MoveSlice) Less(i, j int) bool {
 
 func compare(move *Move) int {
 	if move.HasTag(Capture) {
-		return CAPTURE
+		if move.HasTag(Check) {
+			return CAPTURE_CHECK
+		} else {
+			return CAPTURE
+		}
 	}
 	if move.HasTag(Check) {
 		return CHECK

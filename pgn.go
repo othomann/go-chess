@@ -177,21 +177,36 @@ func encodePGN(g *Game) string {
 		s += fmt.Sprintf("[%s \"%s\"]\n", tag.Key, tag.Value)
 	}
 	s += "\n"
+
+	moveIndex := 0
 	for i, move := range g.moves {
 		pos := g.positions[i]
 		txt := g.notation.Encode(pos, move)
-		if i%2 == 0 {
-			s += fmt.Sprintf("%d. %s", (i/2)+1, txt)
+		if i == 0 {
+			if pos.turn == Black {
+				moveIndex = 1
+			}
+		}
+		if i == 0 {
+			if pos.turn == White {
+				s += fmt.Sprintf("%d. %s", (moveIndex/2)+1, txt)
+			} else {
+				s += fmt.Sprintf("%d... %s", (moveIndex/2)+1, txt)
+			}
+		} else if moveIndex%2 == 0 {
+			s += fmt.Sprintf("%d. %s", (moveIndex/2)+1, txt)
 		} else {
-			s += fmt.Sprintf(" %s ", txt)
+			s += fmt.Sprintf("%s", txt)
 		}
 		if len(g.comments) > i {
 			for _, c := range g.comments[i] {
 				s += " { " + c + " } "
 			}
 		}
+		s += " "
+		moveIndex++
 	}
-	s += " " + string(g.outcome)
+	s += string(g.outcome)
 	return s
 }
 

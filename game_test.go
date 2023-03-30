@@ -384,7 +384,7 @@ func TestMarshalling(t *testing.T) {
 		t.Fatalf("Marshalling failed with %s", err)
 	}
 	output := string(bytes)
-	expected := "\n1. e4 e5  1-0"
+	expected := "\n1. e4 e5 1-0"
 	if output != expected {
 		t.Fatalf("Wrong marshalling; expected %s, but got %s", expected, output)
 	}
