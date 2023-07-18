@@ -1,8 +1,9 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
-	"math/rand"
+	"math/big"
 
 	"github.com/othomann/go-chess"
 )
@@ -13,7 +14,13 @@ func main() {
 	for game.Outcome() == chess.NoOutcome {
 		// select a random move
 		moves := game.ValidMoves()
-		move := moves[rand.Intn(len(moves))]
+		randomInt, err := rand.Int(rand.Reader, big.NewInt(int64(len(moves))))
+		var move *chess.Move
+		if err == nil {
+			move = moves[randomInt.Int64()]
+		} else {
+			move = moves[0]
+		}
 		game.Move(move)
 	}
 	// print outcome and game PGN
