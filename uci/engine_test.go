@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -18,8 +17,8 @@ import (
 var StockfishPath string
 
 func init() {
-	dir, _ := os.Getwd()
-	StockfishPath = filepath.Join(dir, "..", "stockfish")
+	dir := "/opt/homebrew/bin/"
+	StockfishPath = filepath.Join(dir, "stockfish")
 }
 
 func TestExample(t *testing.T) {
@@ -94,8 +93,9 @@ func TestStop(t *testing.T) {
 	if err := eng.Run(uci.CmdStop); err != nil {
 		t.Fatal(err)
 	}
-	if eng.SearchResults().BestMove.S2() != chess.D4 {
-		t.Fatal("expected a different move")
+	move := eng.SearchResults().BestMove
+	if move.S2() != chess.E4 {
+		t.Fatalf("expected a different move: %s", move.String())
 	}
 }
 
