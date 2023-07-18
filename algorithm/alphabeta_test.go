@@ -14,7 +14,10 @@ func TestCheckmate(t *testing.T) {
 		t.Fatal(err)
 	}
 	g := chess.NewGame(fen)
-	score, move := Minimax(g, 2, math.MinInt32, math.MaxInt32)
+	score, move, err := Minimax(g, 2, math.MinInt32, math.MaxInt32)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if score != 2147483647 {
 		t.Fatalf("Wrong score; expected %d, but got %d", -100, score)
 	}
@@ -30,7 +33,10 @@ func TestCheckmate2(t *testing.T) {
 		t.Fatal(err)
 	}
 	g := chess.NewGame(fen)
-	score := AlphaBeta(g, 2, math.MinInt32, math.MaxInt32, true)
+	score, err := AlphaBeta(g, 2, math.MinInt32, math.MaxInt32, true)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if score != 2147483647 {
 		t.Fatalf("Wrong score; expected %d, but got %d", -100, score)
 	}

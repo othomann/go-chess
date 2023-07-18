@@ -21,7 +21,10 @@ func main() {
 		} else {
 			move = moves[0]
 		}
-		game.Move(move)
+		err = game.Move(move)
+		if err != nil {
+			fmt.Printf("Wrong move: %s - %s\n", move, err)
+		}
 	}
 	// print outcome and game PGN
 	fmt.Println(game.Position().Board().Draw())

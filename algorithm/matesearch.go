@@ -175,21 +175,27 @@ func (a MateMoveSlice) Less(i, j int) bool {
 	return a[i].Mobility < a[j].Mobility
 }
 
-func createSearchableMoves(game *chess.Game) MateMoveSlice {
+func createSearchableMoves(game *chess.Game) (MateMoveSlice, error) {
 	nextMoves := game.ValidMoves()
 	result := make([]*MateMove, len(nextMoves))
 
 	for index, move := range nextMoves {
-		game.Move(move)
+		err := game.Move(move)
+		if err != nil {
+			return nil, err
+		}
 		mobility := len(game.ValidMoves())
 		result[index] = &MateMove{
 			Mobility: mobility,
 			Move:     *move,
 		}
-		game.UndoMove()
+		err = game.UndoMove()
+		if err != nil {
+			return nil, err
+		}
 	}
 	sort.Sort(MateMoveSlice(result))
-	return result
+	return result, nil
 }
 
 func MateSearch(game *chess.Game, maximum int, mateNode *MateNode) (bool, *MateNode) {
@@ -197,7 +203,10 @@ func MateSearch(game *chess.Game, maximum int, mateNode *MateNode) (bool, *MateN
 }
 
 func mateSearch_(game *chess.Game, depth int, maximum int, mateNode *MateNode) (bool, *MateNode) {
-	next := createSearchableMoves(game)
+	next, err := createSearchableMoves(game)
+	if err != nil {
+		return false, mateNode.Root()
+	}
 	currentResult := mateNode
 	/* loop */ for _, mateMove := range next {
 		current := currentResult.add(*mateMove, game.Position().Turn())
@@ -215,29 +224,47 @@ func mateSearch_(game *chess.Game, depth int, maximum int, mateNode *MateNode) (
 				}
 				currentResult.Remove(*mateMove)
 			} else if depth < maximum {
-				game.Move(&mateMove.Move)
+				err := game.Move(&mateMove.Move)
+				if err != nil {
+					fmt.Printf("Invalid move: %s", &mateMove.Move)
+				}
 				moveCounter := 0
 				currentResult = current
-				opponentNextMoves := createSearchableMoves(game)
+				opponentNextMoves, err := createSearchableMoves(game)
+				if err != nil {
+					return false, mateNode.Root()
+				}
 				/* opponentLoop */
 				for _, opponentMateMove := range opponentNextMoves {
 					opponentCurrent := currentResult.add(*opponentMateMove, game.Position().Turn())
 					currentResult = opponentCurrent
-					game.Move(&opponentMateMove.Move)
+					err := game.Move(&opponentMateMove.Move)
+					if err != nil {
+						return false, mateNode.Root()
+					}
 					result, _ := mateSearch_(game, depth+1, maximum, currentResult)
 					if !result {
-						game.UndoMove()
+						err := game.UndoMove()
+						if err != nil {
+							return false, mateNode.Root()
+						}
 						currentResult = currentResult.Parent
 						currentResult.Remove(*opponentMateMove)
 						break /* break opponent loop */
 					}
 					currentResult = currentResult.Parent
 					moveCounter++
-					game.UndoMove()
+					err = game.UndoMove()
+					if err != nil {
+						return false, mateNode.Root()
+					}
 				}
 
 				currentResult = currentResult.Parent
-				game.UndoMove()
+				err = game.UndoMove()
+				if err != nil {
+					return false, mateNode.Root()
+				}
 
 				if mobility == moveCounter {
 					return true, mateNode.Root()
