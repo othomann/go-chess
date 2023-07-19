@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -107,6 +108,23 @@ var (
 	// stop calculating as soon as possible,
 	// don't forget the "bestmove" and possibly the "ponder" token when finishing the search
 	CmdStop = cmdNoOptions{Name: "stop", F: func(e *Engine) error {
+		return nil
+	}}
+
+	CmdEval = cmdNoOptions{Name: "eval", F: func(e *Engine) error {
+		scanner := bufio.NewScanner(e.out)
+		for scanner.Scan() {
+			text := e.readLine(scanner)
+			if strings.HasPrefix(text, "Final evaluation") {
+				parts := strings.Fields(text)
+				eval, err := strconv.ParseFloat(parts[2], 64)
+				if err != nil {
+					return err
+				}
+				e.eval = eval
+				break
+			}
+		}
 		return nil
 	}}
 

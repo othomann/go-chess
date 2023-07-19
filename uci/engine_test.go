@@ -182,3 +182,24 @@ info depth 11 seldepth 14 multipv 1 score cp 50 nodes 34551 nps 575850 tbhits 0 
 info depth 12 seldepth 14 multipv 1 score cp 50 nodes 55039 nps 534359 tbhits 0 time 103 pv e2e4 e7e5 g1f3 b8c6 d2d4 e5d4 f3d4 g8f6 b1c3 f8b4
 bestmove e2e4 ponder c7c5`
 )
+
+func TestEval(t *testing.T) {
+	eng, err := uci.New(StockfishPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer eng.Close()
+
+	pos := &chess.Position{}
+	pos.UnmarshalText([]byte("r4r2/1b2bppk/ppq1p3/2pp3n/5P2/1P2P3/PBPPQ1PP/R4RK1 w - - 0 2"))
+	setPos := uci.CmdPosition{Position: pos}
+
+	setGo := uci.CmdGo{Depth: 25}
+	if err := eng.Run(uci.CmdUCINewGame, setPos, setGo, uci.CmdEval); err != nil {
+		t.Fatal(err)
+	}
+	eval := eng.Eval()
+	if eval == 0 {
+		t.Fatalf("eval cannot be 0: %f", eval)
+	}
+}
