@@ -34,6 +34,7 @@ var (
 		MakePGNTest("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", "fixtures/pgns/0010.pgn"),
 		MakePGNTest("8/8/6p1/4R3/6kQ/r2P1pP1/5P2/6K1 b - - 3 42", "fixtures/pgns/0011.pgn"),
 		MakePGNTest("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "fixtures/pgns/0012.pgn"),
+		MakePGNTest("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "fixtures/pgns/0013.pgn"),
 	}
 )
 
@@ -121,7 +122,7 @@ func TestWriteComments(t *testing.T) {
 }
 
 func TestScanner(t *testing.T) {
-	for _, fname := range []string{"fixtures/pgns/0006.pgn", "fixtures/pgns/0007.pgn"} {
+	for _, fname := range []string{"fixtures/pgns/0006.pgn", "fixtures/pgns/0007.pgn", "fixtures/pgns/0014.pgn"} {
 		f, err := os.Open(fname)
 		if err != nil {
 			t.Fatal("could not open file")
