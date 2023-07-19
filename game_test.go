@@ -374,6 +374,26 @@ func TestMoveHistory3(t *testing.T) {
 	}
 }
 
+func TestMoveHistory4(t *testing.T) {
+	game := NewGame()
+	game.MoveStr("e4")
+	game.MoveStr("e5")
+	game.Resign(Black)
+	history := game.MoveHistory()
+	if len(history) != 2 {
+		t.Fatal("Didn't retrieve full history")
+	}
+	game.UndoMoves(2)
+	history = game.MoveHistory()
+	if len(history) != 0 {
+		t.Fatal("Didn't undo last 2 moves")
+	}
+	err := game.UndoMove()
+	if err == nil {
+		t.Fatal("error should be returned as there is no move to undo")
+	}
+}
+
 func TestMarshalling(t *testing.T) {
 	game := NewGame()
 	game.MoveStr("e4")

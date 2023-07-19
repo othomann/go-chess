@@ -418,6 +418,22 @@ func (g *Game) UndoMove() error {
 	return nil
 }
 
+// UndoMoves undos the last n moves
+func (g *Game) UndoMoves(n int) error {
+	if len(g.moves) < n {
+		return fmt.Errorf("cannot undo %d moves", n)
+	}
+
+	if len(g.comments) == len(g.moves) {
+		g.comments = g.comments[:len(g.comments)-n]
+	}
+	g.moves = g.moves[:len(g.moves)-n]
+	g.positions = g.positions[:len(g.positions)-n]
+	g.pos = g.positions[len(g.positions)-1]
+	g.updatePosition()
+	return nil
+}
+
 func (g *Game) updatePosition() {
 	method := g.pos.Status()
 	if method == Stalemate {
