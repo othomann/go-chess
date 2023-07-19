@@ -360,7 +360,7 @@ func (pos *Position) updateEnPassantSquare(m *Move) Square {
 }
 
 func (pos *Position) samePosition(pos2 *Position) bool {
-	return pos.board.String() == pos2.board.String() &&
+	return pos.board.Equal(pos2.board) &&
 		pos.turn == pos2.turn &&
 		pos.castleRights.String() == pos2.castleRights.String() &&
 		pos.enPassantSquare == pos2.enPassantSquare

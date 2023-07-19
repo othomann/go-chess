@@ -453,3 +453,23 @@ func (b *Board) setBBForPiece(p Piece, bb bitboard) {
 		b.bbBlackPawn = bb
 	}
 }
+
+func (b *Board) Equal(bb *Board) bool {
+	return b.bbWhiteKnight == bb.bbWhiteKnight &&
+		b.bbBlackKnight == bb.bbBlackKnight &&
+		b.bbWhiteQueen == bb.bbWhiteQueen &&
+		b.bbBlackQueen == bb.bbBlackQueen &&
+		b.bbBlackBishop == bb.bbBlackBishop &&
+		b.bbWhiteBishop == bb.bbWhiteBishop &&
+		b.bbBlackPawn == bb.bbBlackPawn &&
+		b.bbWhitePawn == bb.bbWhitePawn &&
+		b.bbWhiteKing == bb.bbWhiteKing &&
+		b.bbBlackKing == bb.bbBlackKing &&
+		b.bbWhiteRook == bb.bbWhiteRook &&
+		b.bbBlackRook == bb.bbBlackRook &&
+		b.whiteSqs == bb.whiteSqs &&
+		b.blackSqs == bb.blackSqs &&
+		b.emptySqs == bb.emptySqs &&
+		b.blackKingSq == bb.blackKingSq &&
+		b.whiteKingSq == bb.whiteKingSq
+}
