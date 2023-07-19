@@ -196,7 +196,7 @@ func encodePGN(g *Game) string {
 		} else if moveIndex%2 == 0 {
 			s += fmt.Sprintf("%d. %s", (moveIndex/2)+1, txt)
 		} else {
-			s += fmt.Sprintf("%s", txt)
+			s += txt
 		}
 		if len(g.comments) > i {
 			for _, c := range g.comments[i] {
