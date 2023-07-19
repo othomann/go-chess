@@ -467,3 +467,32 @@ func BenchmarkPositionHash(b *testing.B) {
 		g.Position().Hash()
 	}
 }
+
+type PerfTest struct {
+	fen      string
+	depth    int
+	expected int
+}
+
+func TestPerft(t *testing.T) {
+
+	mateTests := []PerfTest{
+		{fen: INITIAL_FEN_POSITION, depth: 1, expected: 20},
+		{fen: INITIAL_FEN_POSITION, depth: 2, expected: 400},
+		{fen: INITIAL_FEN_POSITION, depth: 3, expected: 8902},
+		{fen: INITIAL_FEN_POSITION, depth: 4, expected: 197281},
+		{fen: INITIAL_FEN_POSITION, depth: 5, expected: 4865609},
+	}
+
+	for _, perfTest := range mateTests {
+		result, duration, err := Perft(perfTest.fen, perfTest.depth)
+
+		if err != nil {
+			t.Fatalf("Perft failed for depth %d with err %s", perfTest.depth, err)
+		}
+		if result != perfTest.expected {
+			t.Fatalf("Perft failed for depth %d: expected %d, got %d", 4, perfTest.expected, result)
+		}
+		t.Logf("Time spend on perf %s with depth %d: %f\n", perfTest.fen, perfTest.depth, duration.Seconds())
+	}
+}

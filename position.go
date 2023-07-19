@@ -58,13 +58,14 @@ type Position struct {
 }
 
 const (
-	startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+	INITIAL_FEN_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+	INITIAL_POSITION     = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 )
 
 // StartingPosition returns the starting position
 // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 func StartingPosition() *Position {
-	pos, _ := decodeFEN(startFEN)
+	pos, _ := decodeFEN(INITIAL_FEN_POSITION)
 	return pos
 }
 

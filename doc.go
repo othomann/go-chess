@@ -23,7 +23,7 @@ Using PGN
 
 Using FEN
 
-	fen, _ := chess.FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+	fen, _ := chess.FEN(INITIAL_FEN_POSITION)
 	game := chess.NewGame(fen)
 
 Random Game

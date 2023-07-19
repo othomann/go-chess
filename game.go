@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"time"
 )
 
 // A Outcome is the result of a game.
@@ -182,6 +183,52 @@ func NewGame(options ...func(*Game)) *Game {
 	return game
 }
 
+func Perft(fen string, depth int) (int, time.Duration, error) {
+	start := time.Now()
+	options, err := FEN(fen)
+	if err != nil {
+		return 0, time.Millisecond, fmt.Errorf("wrong fen notation %s", fen)
+	}
+	g := NewGame(options)
+	result, err := g.perft0(depth)
+	return result, time.Since(start), err
+}
+
+func (g *Game) perft0(depth int) (int, error) {
+	moves := g.ValidMoves()
+	if depth == 1 {
+		return len(moves), nil
+	}
+	sum := 0
+	for _, move := range moves {
+		g.Move(move)
+		result, err := g.perft0(depth - 1)
+		if err != nil {
+			return 0, err
+		}
+		sum += result
+		err = g.UndoMove()
+		if err != nil {
+			return 0, err
+		}
+	}
+	return sum, nil
+}
+
+//	public default long perft(int depth) {
+//		long[] moves = this.allMoves();
+//		if (depth == 1) {
+//			return moves.length;
+//		}
+//		long sum = 0;
+//		for (int i = 0, max = moves.length; i < max; i++) {
+//			this.playMoveWithoutNotification(moves[i]);
+//			sum += this.perft(depth - 1);
+//			this.undoMoveWithoutNotification(moves[i]);
+//		}
+//		return sum;
+//	}
+//
 // Move updates the game with the given move.  An error is returned
 // if the move is invalid or the game has already been completed.
 func (g *Game) Move(m *Move) error {

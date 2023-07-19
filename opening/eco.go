@@ -21,7 +21,7 @@ type BookECO struct {
 // so it can take some time.
 func NewBookECO() (*BookECO, error) {
 	startingPosition := &chess.Position{}
-	if err := startingPosition.UnmarshalText([]byte("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")); err != nil {
+	if err := startingPosition.UnmarshalText([]byte(chess.INITIAL_FEN_POSITION)); err != nil {
 		return nil, err
 	}
 	b := &BookECO{

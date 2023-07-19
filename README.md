@@ -369,7 +369,7 @@ for scanner.Scan() {
 FEN supplied as an optional parameter to the NewGame constructor:
 
 ```go
-fen, err := chess.FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+fen, err := chess.FEN(INITIAL_FEN_POSITION)
 if err != nil {
 	// handle error
 }
@@ -524,5 +524,5 @@ go test ./...
 This can be tested using:
 ```bash
 go test -coverprofile cover.out ./... 
-go tool cover -html=cover.out
+go tool cover -html=cover.out -o cover.html
 ```

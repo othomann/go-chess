@@ -73,7 +73,7 @@ var (
 		{
 			// opening for white
 			N:    AlgebraicNotation{},
-			Pos:  unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"),
+			Pos:  unsafeFEN(INITIAL_FEN_POSITION),
 			Text: "e5",
 		},
 		{

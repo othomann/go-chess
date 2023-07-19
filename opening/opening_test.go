@@ -39,6 +39,13 @@ func TestPossible(t *testing.T) {
 	if len(openings) != 40 {
 		t.Fatalf("Wrong number of openings for %s: expected: %d but got %d", g.String(), 40, len(openings))
 	}
+	o := openings[0]
+	if o.Code() == "" {
+		t.Fatalf("Wrong code for opening: %s", o.Title())
+	}
+	if o.PGN() == "" {
+		t.Fatalf("Wrong pgn for opening: %s", o.Title())
+	}
 }
 
 func TestFind2(t *testing.T) {

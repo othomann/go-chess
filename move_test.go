@@ -15,7 +15,7 @@ type moveTest struct {
 var (
 	validMoves = []moveTest{
 		// pawn moves
-		{m: &Move{s1: E2, s2: E4}, pos: unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")},
+		{m: &Move{s1: E2, s2: E4}, pos: unsafeFEN(INITIAL_FEN_POSITION)},
 		{m: &Move{s1: A2, s2: A3}, pos: unsafeFEN("8/8/8/8/8/8/P7/8 w - - 0 1")},
 		{m: &Move{s1: A7, s2: A6}, pos: unsafeFEN("8/p7/8/8/8/8/8/8 b - - 0 1")},
 		{m: &Move{s1: A7, s2: A5}, pos: unsafeFEN("8/p7/8/8/8/8/8/8 b - - 0 1")},
@@ -72,12 +72,12 @@ var (
 
 	invalidMoves = []moveTest{
 		// out of turn moves
-		{m: &Move{s1: E7, s2: E5}, pos: unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")},
+		{m: &Move{s1: E7, s2: E5}, pos: unsafeFEN(INITIAL_FEN_POSITION)},
 		{m: &Move{s1: E2, s2: E4}, pos: unsafeFEN("rnbqkbnr/1ppppppp/p7/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")},
 		// pawn moves
-		{m: &Move{s1: E2, s2: D3}, pos: unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")},
-		{m: &Move{s1: E2, s2: F3}, pos: unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")},
-		{m: &Move{s1: E2, s2: E5}, pos: unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")},
+		{m: &Move{s1: E2, s2: D3}, pos: unsafeFEN(INITIAL_FEN_POSITION)},
+		{m: &Move{s1: E2, s2: F3}, pos: unsafeFEN(INITIAL_FEN_POSITION)},
+		{m: &Move{s1: E2, s2: E5}, pos: unsafeFEN(INITIAL_FEN_POSITION)},
 		{m: &Move{s1: A2, s2: A1}, pos: unsafeFEN("8/8/8/8/8/8/p7/8 b - - 0 1")},
 		{m: &Move{s1: E6, s2: E5}, pos: unsafeFEN(`2b1r3/2k2p1B/p2np3/4B3/8/5N2/PP1K1PPP/3R4 b - - 2 1`)},
 		{m: &Move{s1: H7, s2: H5}, pos: unsafeFEN(`2bqkbnr/rpppp2p/2n2p2/p5pB/5P2/4P3/PPPP2PP/RNBQK1NR b KQk - 4 6`)},
@@ -128,7 +128,7 @@ var (
 	positionUpdates = []moveTest{
 		{
 			m:       &Move{s1: E2, s2: E4},
-			pos:     unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"),
+			pos:     unsafeFEN(INITIAL_FEN_POSITION),
 			postPos: unsafeFEN("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"),
 		},
 		{
@@ -149,7 +149,7 @@ var (
 		// half move clock - knight move to f3 from starting position
 		{
 			m:       &Move{s1: G1, s2: F3},
-			pos:     unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"),
+			pos:     unsafeFEN(INITIAL_FEN_POSITION),
 			postPos: unsafeFEN("rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1"),
 		},
 		// half move clock - king side castle
@@ -167,7 +167,7 @@ var (
 		// half move clock - pawn push
 		{
 			m:       &Move{s1: E2, s2: E4},
-			pos:     unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"),
+			pos:     unsafeFEN(INITIAL_FEN_POSITION),
 			postPos: unsafeFEN("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"),
 		},
 		// half move clock - pawn capture
@@ -254,7 +254,7 @@ type perfTest struct {
 
 /* https://www.chessprogramming.org/Perft_Results */
 var perfResults = []perfTest{
-	{pos: unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"), nodesPerDepth: []int{
+	{pos: unsafeFEN(INITIAL_FEN_POSITION), nodesPerDepth: []int{
 		20, 400, 8902, 197281,
 		// 4865609, 119060324, 3195901860, 84998978956, 2439530234167, 69352859712417
 	}},
@@ -322,7 +322,7 @@ func countMoves(t *testing.T, originalPosition *Position, positions []*Position,
 }
 
 func BenchmarkValidMoves(b *testing.B) {
-	pos := unsafeFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+	pos := unsafeFEN(INITIAL_FEN_POSITION)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		pos.ValidMoves()

@@ -13,6 +13,11 @@ type pgnTest struct {
 	Error   error
 }
 
+type invalidPgnTest struct {
+	PGN   string
+	Error error
+}
+
 func MakePGNTest(pos string, arg string) pgnTest {
 	pgn, err := mustParsePGN()(arg)
 	return pgnTest{
@@ -22,21 +27,32 @@ func MakePGNTest(pos string, arg string) pgnTest {
 	}
 }
 
-var (
-	validPGNs = []pgnTest{
-		MakePGNTest("4r3/6P1/2p2P1k/1p6/pP2p1R1/P1B5/2P2K2/3r4 b - - 0 45", "fixtures/pgns/0001.pgn"),
-		MakePGNTest("4r3/6P1/2p2P1k/1p6/pP2p1R1/P1B5/2P2K2/3r4 b - - 0 45", "fixtures/pgns/0002.pgn"),
-		MakePGNTest("2r2rk1/pp1bBpp1/2np4/2pp2p1/1bP5/1P4P1/P1QPPPBP/3R1RK1 b - - 0 3", "fixtures/pgns/0003.pgn"),
-		MakePGNTest("r3kb1r/2qp1pp1/b1n1p2p/pp2P3/5n1B/1PPQ1N2/P1BN1PPP/R3K2R w KQkq - 1 14", "fixtures/pgns/0004.pgn"),
-		MakePGNTest("r3kb1r/2qp1pp1/b1n1p2p/pp2P3/5n1B/1PPQ1N2/P1BN1PPP/R3K2R w KQkq - 1 14", "fixtures/pgns/0004.pgn"),
-		MakePGNTest("rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3", "fixtures/pgns/0008.pgn"),
-		MakePGNTest("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", "fixtures/pgns/0009.pgn"),
-		MakePGNTest("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", "fixtures/pgns/0010.pgn"),
-		MakePGNTest("8/8/6p1/4R3/6kQ/r2P1pP1/5P2/6K1 b - - 3 42", "fixtures/pgns/0011.pgn"),
-		MakePGNTest("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "fixtures/pgns/0012.pgn"),
-		MakePGNTest("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "fixtures/pgns/0013.pgn"),
+func MakeInvalidPGNTest(arg string) invalidPgnTest {
+	pgn, err := mustParsePGN()(arg)
+	return invalidPgnTest{
+		PGN:   pgn,
+		Error: err,
 	}
-)
+}
+
+var validPGNs = []pgnTest{
+	MakePGNTest("4r3/6P1/2p2P1k/1p6/pP2p1R1/P1B5/2P2K2/3r4 b - - 0 45", "fixtures/pgns/0001.pgn"),
+	MakePGNTest("4r3/6P1/2p2P1k/1p6/pP2p1R1/P1B5/2P2K2/3r4 b - - 0 45", "fixtures/pgns/0002.pgn"),
+	MakePGNTest("2r2rk1/pp1bBpp1/2np4/2pp2p1/1bP5/1P4P1/P1QPPPBP/3R1RK1 b - - 0 3", "fixtures/pgns/0003.pgn"),
+	MakePGNTest("r3kb1r/2qp1pp1/b1n1p2p/pp2P3/5n1B/1PPQ1N2/P1BN1PPP/R3K2R w KQkq - 1 14", "fixtures/pgns/0004.pgn"),
+	MakePGNTest("r3kb1r/2qp1pp1/b1n1p2p/pp2P3/5n1B/1PPQ1N2/P1BN1PPP/R3K2R w KQkq - 1 14", "fixtures/pgns/0004.pgn"),
+	MakePGNTest("rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3", "fixtures/pgns/0008.pgn"),
+	MakePGNTest("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", "fixtures/pgns/0009.pgn"),
+	MakePGNTest("r1bqkbnr/1ppp1ppp/p1n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", "fixtures/pgns/0010.pgn"),
+	MakePGNTest("8/8/6p1/4R3/6kQ/r2P1pP1/5P2/6K1 b - - 3 42", "fixtures/pgns/0011.pgn"),
+	MakePGNTest(INITIAL_FEN_POSITION, "fixtures/pgns/0012.pgn"),
+	MakePGNTest(INITIAL_FEN_POSITION, "fixtures/pgns/0013.pgn"),
+	MakePGNTest("rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2", "fixtures/pgns/0016.pgn"),
+}
+var invalidPGNs = []invalidPgnTest{
+	MakeInvalidPGNTest("fixtures/invalid/0001.pgn"),
+	MakeInvalidPGNTest("fixtures/invalid/0002.pgn"),
+}
 
 func TestValidPGNs(t *testing.T) {
 	for _, test := range validPGNs {
@@ -48,6 +64,18 @@ func TestValidPGNs(t *testing.T) {
 			t.Fatalf("expected board to be \n%s\nFEN:%s\n but got \n%s\n\nFEN:%s\n",
 				test.PostPos.board.Draw(), test.PostPos.String(),
 				game.Position().board.Draw(), game.Position().String())
+		}
+		if game.String() == "" {
+			t.Fatalf("Unexpected pgn output")
+		}
+	}
+}
+
+func TestInvalidPGNs(t *testing.T) {
+	for _, test := range invalidPGNs {
+		_, err := decodePGN(nil, test.PGN)
+		if err == nil {
+			t.Fatalf("missing expected pgn error")
 		}
 	}
 }

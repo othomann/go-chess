@@ -312,7 +312,6 @@ const (
 	bbRank8 bitboard = 255
 )
 
-// TODO make method on Square
 func bbForSquare(sq Square) bitboard {
 	return bbSquares[sq]
 }

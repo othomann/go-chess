@@ -64,7 +64,7 @@ func (mateNode *MateNode) String() (string, error) {
 		options = append(options, chess.UseNotation(chess.UCINotation{}))
 		game := chess.NewGame(options...)
 
-		moveOutput := mateNode.uci_pgn()
+		moveOutput := mateNode.uciPgn()
 		moves := strings.Fields(moveOutput)
 		reverseSlice(moves)
 		for _, move := range moves {
@@ -84,26 +84,26 @@ func (mateNode *MateNode) Print() {
 		depth := 0
 		if mateNode.Children != nil && len(mateNode.Children) != 0 {
 			for _, child := range mateNode.Children {
-				child.print_string_(depth + 1)
+				child.printString0(depth + 1)
 			}
 		}
 	}
 }
 
-func (mateNode *MateNode) print_string_(depth int) {
+func (mateNode *MateNode) printString0(depth int) {
 	fmt.Printf("%s%s\n", strings.Repeat("  ", depth), mateNode.Move.Move.String())
 	if mateNode.Children != nil && len(mateNode.Children) != 0 {
 		for _, child := range mateNode.Children {
-			child.print_string_(depth + 1)
+			child.printString0(depth + 1)
 		}
 	}
 }
 
-func (mateNode *MateNode) uci_pgn() string {
-	return mateNode.uci_pgn_(0, mateNode.Root().Depth)
+func (mateNode *MateNode) uciPgn() string {
+	return mateNode.uciPgn0(0, mateNode.Root().Depth)
 }
 
-func (mateNode *MateNode) uci_pgn_(depth, max int) string {
+func (mateNode *MateNode) uciPgn0(depth, max int) string {
 	if depth >= max {
 		s := ""
 		current := mateNode
@@ -115,7 +115,7 @@ func (mateNode *MateNode) uci_pgn_(depth, max int) string {
 	}
 	if mateNode.Children != nil && len(mateNode.Children) != 0 {
 		for _, child := range mateNode.Children {
-			result := child.uci_pgn_(depth+1, max)
+			result := child.uciPgn0(depth+1, max)
 			if result != "" {
 				return result
 			}
@@ -199,10 +199,10 @@ func createSearchableMoves(game *chess.Game) (MateMoveSlice, error) {
 }
 
 func MateSearch(game *chess.Game, maximum int, mateNode *MateNode) (bool, *MateNode) {
-	return mateSearch_(game, 1, maximum, mateNode)
+	return mateSearch0(game, 1, maximum, mateNode)
 }
 
-func mateSearch_(game *chess.Game, depth int, maximum int, mateNode *MateNode) (bool, *MateNode) {
+func mateSearch0(game *chess.Game, depth int, maximum int, mateNode *MateNode) (bool, *MateNode) {
 	next, err := createSearchableMoves(game)
 	if err != nil {
 		return false, mateNode.Root()
@@ -242,7 +242,7 @@ func mateSearch_(game *chess.Game, depth int, maximum int, mateNode *MateNode) (
 					if err != nil {
 						return false, mateNode.Root()
 					}
-					result, _ := mateSearch_(game, depth+1, maximum, currentResult)
+					result, _ := mateSearch0(game, depth+1, maximum, currentResult)
 					if !result {
 						err := game.UndoMove()
 						if err != nil {
