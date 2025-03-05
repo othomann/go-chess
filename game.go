@@ -201,7 +201,10 @@ func (g *Game) perft0(depth int) (int, error) {
 	}
 	sum := 0
 	for _, move := range moves {
-		g.Move(move)
+		err := g.Move(move)
+		if err != nil {
+			return 0, err
+		}
 		result, err := g.perft0(depth - 1)
 		if err != nil {
 			return 0, err
