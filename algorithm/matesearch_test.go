@@ -43,6 +43,11 @@ var (
 		{fen: "8/5P1k/5B2/8/8/3K4/8/8 w - - 0 1", depth: 4, expected: "1. Ke4 Kg6 2. f8=R Kh5 3. Kf5 Kh6 4. Rh8# 1-0"},
 		{fen: "5R2/6pp/p4pk1/4Pb2/8/4QPKP/3B4/r2q4 w - - 0 1", depth: 4, expected: "1. Qh6+ gxh6 2. Rxf6+ Kg7 3. Bxh6+ Kg8 4. Rf8# 1-0"},
 		{fen: "2r4k/p5p1/3Qq2p/4N3/Pp3n2/6P1/PK5P/3R4 b - - 0 1", depth: 3, expected: "1... Rc2+ 2. Kxc2 Qxa2+ 3. Kc1 Ne2# 0-1"},
+		{fen: "3KR2Q/6q1/8/8/8/6r1/8/k7 b - - 0 1", depth: 8, expected: "1... Rd3+ 2. Kc8 Rc3+ 3. Kb8 Qc7+ 4. Ka8 Qa5+ 5. Kb7 Qb4+ 6. Ka6 Qa3+ 7. Kb5 Qb2+ 8. Ka4 Ra3# 0-1"},
+		{fen: "8/p4pkp/1pb1p1p1/3qP3/4n2P/BP6/2P1BPP1/2Q3K1 w - - 0 1", depth: 2, expected: "1. Qh6+ Kxh6 2. Bf8# 1-0"},
+		{fen: "Q4rkr/1pK2p1p/7P/R2Bp3/8/8/5P1p/8 w - - 0 1", depth: 2, expected: "1. Bh1 Rc8+ 2. Qxc8# 1-0"},
+		{fen: "5r1k/1PB3pp/3p1r2/7q/4Bn2/5P2/4QP1P/1R4RK b - - 0 1", depth: 6, expected: "1... Qxh2+ 2. Kxh2 Rh6+ 3. Kg3 Rh3+ 4. Kg4 h5+ 5. Kg5 Ne6+ 6. Kg6 Rf6# 0-1"},
+		{fen: "6nk/5Qpp/2p4q/p1B1p3/P1P5/1R1B1PP1/Kb5r/8 w - - 0 1", depth: 4, expected: "1. Qxg8+ Kxg8 2. Rb8+ Kf7 3. Rf8+ Ke6 4. Bf5# 1-0"},
 	}
 )
 
