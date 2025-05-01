@@ -48,6 +48,8 @@ var (
 		{fen: "Q4rkr/1pK2p1p/7P/R2Bp3/8/8/5P1p/8 w - - 0 1", depth: 2, expected: "1. Bh1 Rc8+ 2. Qxc8# 1-0"},
 		{fen: "5r1k/1PB3pp/3p1r2/7q/4Bn2/5P2/4QP1P/1R4RK b - - 0 1", depth: 6, expected: "1... Qxh2+ 2. Kxh2 Rh6+ 3. Kg3 Rh3+ 4. Kg4 h5+ 5. Kg5 Ne6+ 6. Kg6 Rf6# 0-1"},
 		{fen: "6nk/5Qpp/2p4q/p1B1p3/P1P5/1R1B1PP1/Kb5r/8 w - - 0 1", depth: 4, expected: "1. Qxg8+ Kxg8 2. Rb8+ Kf7 3. Rf8+ Ke6 4. Bf5# 1-0"},
+		{fen: "8/8/2B3N1/5p2/6p1/6pk/4K2b/7r w - - 0 1", depth: 4, expected: "1. Bg2+ Kxg2 2. Nf4+ Kg1 3. Ke1 g2 4. Ne2# 1-0"},
+		{fen: "k7/Pp6/1p6/1p3B2/1p3K2/1p6/8/R7 w - - 0 1", depth: 6, expected: "1. Bb1 b2 2. Ra2 b3 3. Ra3 b4 4. Ra4 b5 5. Ra5 b6 6. Be4# 1-0"},
 	}
 )
 
