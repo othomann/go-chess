@@ -486,10 +486,11 @@ func (g *Game) UndoMoves(n int) error {
 
 func (g *Game) updatePosition() {
 	method := g.pos.Status()
-	if method == Stalemate {
+	switch method {
+	case Stalemate:
 		g.method = Stalemate
 		g.outcome = Draw
-	} else if method == Checkmate {
+	case Checkmate:
 		g.method = Checkmate
 		g.outcome = WhiteWon
 		if g.pos.Turn() == White {

@@ -191,7 +191,10 @@ func TestEval(t *testing.T) {
 	defer eng.Close()
 
 	pos := &chess.Position{}
-	pos.UnmarshalText([]byte("r4r2/1b2bppk/ppq1p3/2pp3n/5P2/1P2P3/PBPPQ1PP/R4RK1 w - - 0 2"))
+	err = pos.UnmarshalText([]byte("r4r2/1b2bppk/ppq1p3/2pp3n/5P2/1P2P3/PBPPQ1PP/R4RK1 w - - 0 2"))
+	if err != nil {
+		t.Fatal(err)
+	}
 	setPos := uci.CmdPosition{Position: pos}
 
 	setGo := uci.CmdGo{Depth: 25}

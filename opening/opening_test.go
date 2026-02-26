@@ -11,8 +11,14 @@ import (
 
 func TestFind(t *testing.T) {
 	g := chess.NewGame()
-	g.MoveStr("e4")
-	g.MoveStr("e6")
+	err := g.MoveStr("e4")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = g.MoveStr("e6")
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// print French Defense
 	book, err := opening.NewBookECO()
@@ -27,8 +33,15 @@ func TestFind(t *testing.T) {
 
 func TestPossible(t *testing.T) {
 	g := chess.NewGame()
-	g.MoveStr("e4")
-	g.MoveStr("d5")
+	err := g.MoveStr("e4")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = g.MoveStr("d5")
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// print all variantions of the Scandinavian Defense
 	book, err := opening.NewBookECO()
@@ -124,6 +137,9 @@ func TestParsing(t *testing.T) {
 
 func BenchmarkNewBookECO(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		opening.NewBookECO()
+		_, err := opening.NewBookECO()
+		if err != nil {
+			b.Fatal("Error in benchmark")
+		}
 	}
 }
