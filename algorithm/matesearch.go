@@ -82,7 +82,7 @@ func (mateNode *MateNode) String() (string, error) {
 func (mateNode *MateNode) Print() {
 	if mateNode.isRoot() {
 		depth := 0
-		if mateNode.Children != nil && len(mateNode.Children) != 0 {
+		if len(mateNode.Children) != 0 {
 			for _, child := range mateNode.Children {
 				child.printString0(depth + 1)
 			}
@@ -92,7 +92,7 @@ func (mateNode *MateNode) Print() {
 
 func (mateNode *MateNode) printString0(depth int) {
 	fmt.Printf("%s%s\n", strings.Repeat("  ", depth), mateNode.Move.Move.String())
-	if mateNode.Children != nil && len(mateNode.Children) != 0 {
+	if len(mateNode.Children) != 0 {
 		for _, child := range mateNode.Children {
 			child.printString0(depth + 1)
 		}
@@ -113,7 +113,7 @@ func (mateNode *MateNode) uciPgn0(depth, max int) string {
 		}
 		return s
 	}
-	if mateNode.Children != nil && len(mateNode.Children) != 0 {
+	if len(mateNode.Children) != 0 {
 		for _, child := range mateNode.Children {
 			result := child.uciPgn0(depth+1, max)
 			if result != "" {

@@ -246,8 +246,16 @@ func TestSufficientMaterial(t *testing.T) {
 
 func TestSerializationCycle(t *testing.T) {
 	g := NewGame()
-	g.MoveStr("e4")
-	g.MoveStr("e5")
+	err := g.MoveStr("e4")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = g.MoveStr("e5")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	pgn, err := PGN(NewInput(strings.NewReader(g.String())))
 	if err != nil {
 		t.Fatal(err)
@@ -292,11 +300,17 @@ func TestTagPairs(t *testing.T) {
 func TestPositionHash(t *testing.T) {
 	g1 := NewGame()
 	for _, s := range []string{"Nc3", "e5", "Nf3"} {
-		g1.MoveStr(s)
+		err := g1.MoveStr(s)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 	g2 := NewGame()
 	for _, s := range []string{"Nf3", "e5", "Nc3"} {
-		g2.MoveStr(s)
+		err := g2.MoveStr(s)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 	if g1.Position().Hash() != g2.Position().Hash() {
 		t.Fatalf("expected position hashes to be equal but got %s and %s", g1.Position().Hash(), g2.Position().Hash())
@@ -320,8 +334,16 @@ func TestMoveHistory(t *testing.T) {
 
 func TestMoveHistory2(t *testing.T) {
 	game := NewGame()
-	game.MoveStr("e4")
-	game.MoveStr("e5")
+	err := game.MoveStr("e4")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = game.MoveStr("e5")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	game.Resign(Black)
 	history := game.MoveHistory()
 	if len(history) != 2 {
@@ -336,7 +358,7 @@ func TestMoveHistory2(t *testing.T) {
 	if fen != expected {
 		t.Fatalf("Wrong fen output; expected %s, but got %s", expected, fen)
 	}
-	err := game.Move(nil)
+	err = game.Move(nil)
 	if err == nil {
 		t.Fatalf("Error should be reported")
 	}
@@ -351,24 +373,40 @@ func TestMoveHistory2(t *testing.T) {
 
 func TestMoveHistory3(t *testing.T) {
 	game := NewGame()
-	game.MoveStr("e4")
-	game.MoveStr("e5")
+	err := game.MoveStr("e4")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = game.MoveStr("e5")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	game.Resign(Black)
 	history := game.MoveHistory()
 	if len(history) != 2 {
 		t.Fatal("Didn't retrieve full history")
 	}
-	game.UndoMove()
+	err = game.UndoMove()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	history = game.MoveHistory()
 	if len(history) != 1 {
 		t.Fatal("Didn't undo move")
 	}
-	game.UndoMove()
+	err = game.UndoMove()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	history = game.MoveHistory()
 	if len(history) != 0 {
 		t.Fatal("Didn't undo move")
 	}
-	err := game.UndoMove()
+	err = game.UndoMove()
 	if err == nil {
 		t.Fatal("error should be returned as there is no move to undo")
 	}
@@ -376,19 +414,31 @@ func TestMoveHistory3(t *testing.T) {
 
 func TestMoveHistory4(t *testing.T) {
 	game := NewGame()
-	game.MoveStr("e4")
-	game.MoveStr("e5")
+	err := game.MoveStr("e4")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = game.MoveStr("e5")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	game.Resign(Black)
 	history := game.MoveHistory()
 	if len(history) != 2 {
 		t.Fatal("Didn't retrieve full history")
 	}
-	game.UndoMoves(2)
+	err = game.UndoMoves(2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	history = game.MoveHistory()
 	if len(history) != 0 {
 		t.Fatal("Didn't undo last 2 moves")
 	}
-	err := game.UndoMove()
+	err = game.UndoMove()
 	if err == nil {
 		t.Fatal("error should be returned as there is no move to undo")
 	}
@@ -396,8 +446,16 @@ func TestMoveHistory4(t *testing.T) {
 
 func TestMarshalling(t *testing.T) {
 	game := NewGame()
-	game.MoveStr("e4")
-	game.MoveStr("e5")
+	err := game.MoveStr("e4")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = game.MoveStr("e5")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	game.Resign(Black)
 	bytes, err := game.MarshalText()
 	if err != nil {
