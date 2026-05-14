@@ -531,4 +531,22 @@
   </g>
 </g>
 <text x="357" y="357" style="text-anchor:end;font-size:11px;fill: #a57551" >a</text>
-</svg>
+<svg>
+  <defs>
+    <marker 
+      id="head-0" 
+      orient="auto"
+      markerWidth="3"
+      markerHeight="4"
+      refX="0"
+      refY="1.5">
+      <path d="M0,0 V3 L2,1.5 Z" fill="#000000" fill-opacity="75%" />
+    </marker>
+  </defs>
+  <path
+    marker-end="url(#head-0)"
+    stroke-width="8px"
+    d="M202.500000,82.500000 202.500000,142.500000"
+    stroke="#000000"
+    stroke-opacity="75%" />
+</svg></svg>

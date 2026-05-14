@@ -37,7 +37,7 @@ func TestBitboardOccupied(t *testing.T) {
 	m := map[Square]bool{
 		B3: true,
 	}
-	bb, _ := newBitboard(m)
+	bb := newBitboard(m)
 	if bb.Occupied(B3) != true {
 		t.Fatalf("bitboard occupied of %s expected %t but got %t", bb, true, false)
 	}

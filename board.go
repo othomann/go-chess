@@ -39,7 +39,7 @@ func NewBoard(m map[Square]Piece) *Board {
 				bm[sq] = true
 			}
 		}
-		bb, _ := newBitboard(bm)
+		bb := newBitboard(bm)
 		b.setBBForPiece(p1, bb)
 	}
 	b.calcConvienceBBs(nil)

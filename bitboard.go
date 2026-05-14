@@ -9,20 +9,15 @@ import (
 // 64 board positions begin with A1 as the most significant bit and H8 as the least.
 type bitboard uint64
 
-func newBitboard(m map[Square]bool) (bitboard, error) {
-	s := ""
+func newBitboard(m map[Square]bool) bitboard {
+	var bb uint64
 	for sq := 0; sq < numOfSquaresInBoard; sq++ {
+		bb <<= 1
 		if m[Square(sq)] {
-			s += "1"
-		} else {
-			s += "0"
+			bb |= 1
 		}
 	}
-	bb, err := strconv.ParseUint(s, 2, 64)
-	if err != nil {
-		return bitboard(0), err
-	}
-	return bitboard(bb), nil
+	return bitboard(bb)
 }
 
 func (b bitboard) Mapping() map[Square]bool {
